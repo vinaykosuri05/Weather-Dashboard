@@ -39,8 +39,10 @@ git clone https://github.com/vinaykosuri05/Weather-Dashboard.git
 
 ## 📁 Project Structure
 weather-dashboard/
-│
+
 ├── index.html    → Page structure
+
 ├── style.css     → Styling & animations
+
 └── script.js     → API calls & logic
 
