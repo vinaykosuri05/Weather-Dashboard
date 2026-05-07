@@ -44,5 +44,3 @@ weather-dashboard/
 ├── style.css     → Styling & animations
 └── script.js     → API calls & logic
 
-## 📄 License
-This project is open source and available under the [MIT License](LICENSE).
