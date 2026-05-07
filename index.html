@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+
+    <!-- BACKGROUND OVERLAY -->
+    <div id="bg-overlay"></div>
+
+    <!-- HEADER -->
+    <header>
+      <h1>☁ Weather Dashboard</h1>
+    </header>
+
+    <!-- SEARCH SECTION -->
+    <section class="search-section">
+      <input
+        type="text"
+        id="city-input"
+        placeholder="Enter city name..."
+      />
+      <button id="search-btn">Get Weather</button>
+      <button id="location-btn">📍 My Location</button>
+    </section>
+
+    <!-- ERROR MESSAGE -->
+    <p class="error-msg" id="error-msg"></p>
+
+    <!-- CURRENT WEATHER CARD -->
+    <section class="weather-card" id="weather-card">
+      <p class="city-name" id="city-name">--</p>
+      <h2 class="temperature" id="temperature">--°C</h2>
+      <p class="condition" id="condition">--</p>
+      <div class="details">
+        <span>💧 Humidity: <strong id="humidity">--</strong></span>
+        <span>💨 Wind: <strong id="wind">--</strong></span>
+      </div>
+    </section>
+
+    <!-- 5-DAY FORECAST -->
+    <section class="forecast-section">
+      <h3>5-Day Forecast</h3>
+      <div class="forecast-row" id="forecast-row">
+        <!-- Forecast cards injected here by JavaScript -->
+      </div>
+    </section>
+
+    <script src="script.js"></script>
+  </body>
+</html>

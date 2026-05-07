@@ -1,0 +1,245 @@
+/* ============================================
+   WEATHER DASHBOARD — STYLESHEET
+   ============================================ */
+
+
+/* ── RESET & BASE ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: white;
+  padding: 20px;
+  transition: background-image 1s ease-in-out;
+}
+
+
+/* ── BACKGROUND OVERLAY ── */
+#bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Keep all content above overlay */
+header,
+.search-section,
+.weather-card,
+.forecast-section,
+.error-msg {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  padding: 24px 0 16px;
+}
+
+header h1 {
+  font-size: 2rem;
+  letter-spacing: 2px;
+  color: #e0e0e0;
+}
+
+
+/* ── SEARCH SECTION ── */
+.search-section {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+#city-input {
+  width: 340px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  outline: none;
+  backdrop-filter: blur(6px);
+}
+
+#city-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+#city-input:focus {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+#search-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  background: #e94560;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#search-btn:hover {
+  background: #c73652;
+}
+
+#location-btn {
+  padding: 12px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
+  background: transparent;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+#location-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: white;
+}
+
+#location-btn.loading-loc {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* ── ERROR MESSAGE ── */
+.error-msg {
+  text-align: center;
+  color: #e94560;
+  font-size: 0.95rem;
+  margin-top: 10px;
+  min-height: 20px;
+}
+
+
+/* ── CURRENT WEATHER CARD ── */
+.weather-card {
+  max-width: 480px;
+  margin: 30px auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.city-name {
+  font-size: 1.4rem;
+  color: #aad4f5;
+  margin-bottom: 8px;
+}
+
+.temperature {
+  font-size: 4rem;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+.condition {
+  font-size: 1.1rem;
+  color: #cccccc;
+  margin-bottom: 20px;
+  text-transform: capitalize;
+}
+
+.details {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.95rem;
+  color: #dddddd;
+}
+
+
+/* ── 5-DAY FORECAST ── */
+.forecast-section {
+  max-width: 680px;
+  margin: 0 auto 40px;
+}
+
+.forecast-section h3 {
+  text-align: center;
+  margin-bottom: 14px;
+  font-size: 1.1rem;
+  color: #aad4f5;
+  letter-spacing: 1px;
+}
+
+.forecast-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.forecast-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 16px 20px;
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+}
+
+.forecast-card:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.forecast-card .day {
+  font-size: 0.85rem;
+  color: #aad4f5;
+  margin-bottom: 6px;
+}
+
+.forecast-card .fc-icon {
+  font-size: 1.5rem;
+  margin: 6px 0;
+}
+
+.forecast-card .fc-temp {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+
+/* ── LOADING ANIMATION ── */
+.loading {
+  text-align: center;
+  color: #aad4f5;
+  font-size: 1rem;
+  margin: 10px 0;
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.4; }
+}
