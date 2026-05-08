@@ -4,51 +4,99 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="style.css" />
   </head>
 
-  <body>
+  <body class="min-h-screen text-white overflow-x-hidden">
 
-    <!-- BACKGROUND OVERLAY -->
     <div id="bg-overlay"></div>
 
     <!-- HEADER -->
-    <header>
-      <h1>☁ Weather Dashboard</h1>
+    <header class="text-center pt-10 pb-4 relative z-10">
+      <div class="inline-flex items-center gap-3 glass-header px-8 py-3 rounded-full">
+        <span class="text-3xl"> </span>
+        <h1 class="text-2xl font-bold tracking-widest text-white/90">Weather Dashboard</h1>
+      </div>
     </header>
 
     <!-- SEARCH SECTION -->
-    <section class="search-section">
-      <input
-        type="text"
-        id="city-input"
-        placeholder="Enter city name..."
-      />
-      <button id="search-btn">Get Weather</button>
-      <button id="location-btn">📍 My Location</button>
+    <section class="flex flex-wrap justify-center gap-4 mt-8 px-4 relative z-10">
+
+      <!-- GLOWING SEARCH INPUT -->
+      <div class="tooltip-wrap">
+        <div class="glow-search-wrap" id="search-wrap">
+          <div class="glow-layer glow-layer-1"></div>
+          <div class="glow-layer glow-layer-2"></div>
+          <div class="glow-layer glow-layer-3"></div>
+          <span class="search-icon-inside">🔍</span>
+          <input type="text" id="city-input" placeholder="Enter city name..." class="search-input"/>
+        </div>
+        <div class="tooltip">Type any city and press Enter ↵</div>
+      </div>
+
+      <!-- GET WEATHER BUTTON -->
+      <div class="tooltip-wrap">
+        <button id="search-btn" class="btn-primary float-btn ripple-btn px-7 py-3 rounded-full font-semibold tracking-wide">
+           Get Weather
+        </button>
+        <div class="tooltip">Fetch live weather data</div>
+      </div>
+
+      <!-- MY LOCATION BUTTON -->
+      <div class="tooltip-wrap">
+        <button id="location-btn" class="btn-outline float-btn ripple-btn px-7 py-3 rounded-full font-semibold tracking-wide">
+           My Location
+        </button>
+        <div class="tooltip">Auto-detect your GPS location</div>
+      </div>
+
     </section>
 
-    <!-- ERROR MESSAGE -->
-    <p class="error-msg" id="error-msg"></p>
+    <!-- ERROR -->
+    <p class="text-center mt-3 text-red-400 text-sm min-h-5 relative z-10" id="error-msg"></p>
 
-    <!-- CURRENT WEATHER CARD -->
-    <section class="weather-card" id="weather-card">
-      <p class="city-name" id="city-name">--</p>
-      <h2 class="temperature" id="temperature">--°C</h2>
-      <p class="condition" id="condition">--</p>
-      <div class="details">
-        <span>💧 Humidity: <strong id="humidity">--</strong></span>
-        <span>💨 Wind: <strong id="wind">--</strong></span>
+    <!-- WEATHER CARD -->
+    <section class="glass-card max-w-lg mx-auto mt-6 rounded-3xl p-8 text-center relative z-10 float-card">
+      <p class="text-blue-300 text-lg font-medium mb-1 tracking-wide" id="city-name"> Search a city to begin</p>
+      <h2 class="text-8xl font-extrabold my-3 temp-glow" id="temperature">--°</h2>
+      <p class="text-white/70 text-lg capitalize mb-6 tracking-wider" id="condition"> Your weather awaits</p>
+      <div class="border-t border-white/10 pt-5">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="stat-card rounded-2xl p-4 tooltip-wrap">
+            <div class="text-2xl mb-1"> </div>
+            <div class="text-xs text-white/50 uppercase tracking-widest">Humidity</div>
+            <div class="text-xl font-bold mt-1" id="humidity">--</div>
+            <div class="tooltip">Moisture level in the air</div>
+          </div>
+          <div class="stat-card rounded-2xl p-4 tooltip-wrap">
+            <div class="text-2xl mb-1"> </div>
+            <div class="text-xs text-white/50 uppercase tracking-widest">Wind Speed</div>
+            <div class="text-xl font-bold mt-1" id="wind">--</div>
+            <div class="tooltip">Current wind speed</div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- 5-DAY FORECAST -->
-    <section class="forecast-section">
-      <h3>5-Day Forecast</h3>
-      <div class="forecast-row" id="forecast-row">
-        <!-- Forecast cards injected here by JavaScript -->
-      </div>
+    <section class="max-w-3xl mx-auto mt-6 mb-20 px-4 relative z-10">
+      <h3 class="text-center text-blue-300 text-xs font-semibold tracking-widest uppercase mb-4">📅 5 — Day Forecast</h3>
+      <div class="flex gap-3 justify-center flex-wrap" id="forecast-row"></div>
     </section>
+
+    <!-- FLOATING ACTION BUTTONS -->
+    <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+      <div class="tooltip-wrap">
+        <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fab-btn ripple-btn">⬆️</button>
+        <div class="tooltip tooltip-left-pos">Back to top</div>
+      </div>
+      <div class="tooltip-wrap">
+        <button onclick="document.getElementById('search-btn').click()" class="fab-btn ripple-btn">🔄</button>
+        <div class="tooltip tooltip-left-pos">Refresh weather</div>
+      </div>
+    </div>
 
     <script src="script.js"></script>
   </body>
