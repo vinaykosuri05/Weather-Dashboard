@@ -1,245 +1,442 @@
 /* ============================================
-   WEATHER DASHBOARD — STYLESHEET
+   WEATHER DASHBOARD — ADVANCED UI STYLESHEET
    ============================================ */
 
-
-/* ── RESET & BASE ── */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
   background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  min-height: 100vh;
-  color: white;
-  padding: 20px;
-  transition: background-image 1s ease-in-out;
+  transition: background-image 1.2s ease-in-out;
 }
 
-
-/* ── BACKGROUND OVERLAY ── */
 #bg-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: linear-gradient(160deg, rgba(0,0,0,0.55) 0%, rgba(0,10,30,0.65) 100%);
   z-index: 0;
   pointer-events: none;
 }
 
-/* Keep all content above overlay */
-header,
-.search-section,
-.weather-card,
-.forecast-section,
-.error-msg {
+
+/* ============================================
+    GLOWING ANIMATED SEARCH BAR
+   (Recreated from React component in pure CSS)
+   ============================================ */
+
+.glow-search-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Each glow-layer is overflow:hidden with a large rotating ::before */
+.glow-layer {
+  position: absolute;
+  inset: -3px;
+  border-radius: 34px;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.glow-layer::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  background-repeat: no-repeat;
+  transition: rotate 2s ease;
+}
+
+/* Layer 1 — main purple/pink conic border */
+.glow-layer-1 { filter: blur(3px); }
+.glow-layer-1::before {
+  rotate: 60deg;
+  background: conic-gradient(
+    #000,
+    #402fb5 5%,
+    #000 38%,
+    #000 50%,
+    #cf30aa 60%,
+    #000 87%
+  );
+}
+
+/* Layer 2 — deep blue/purple inner glow */
+.glow-layer-2 {
+  inset: -2px;
+  filter: blur(2px);
+}
+.glow-layer-2::before {
+  rotate: 82deg;
+  background: conic-gradient(
+    rgba(0,0,0,0),
+    #18116a,
+    rgba(0,0,0,0) 10%,
+    rgba(0,0,0,0) 50%,
+    #6e1b60,
+    rgba(0,0,0,0) 60%
+  );
+}
+
+/* Layer 3 — light highlight edge */
+.glow-layer-3 {
+  inset: -1px;
+  filter: blur(1px);
+}
+.glow-layer-3::before {
+  rotate: 83deg;
+  background: conic-gradient(
+    rgba(0,0,0,0) 0%,
+    #a099d8,
+    rgba(0,0,0,0) 8%,
+    rgba(0,0,0,0) 50%,
+    #dfa2da,
+    rgba(0,0,0,0) 58%
+  );
+  filter: brightness(1.4);
+}
+
+/* ON HOVER — rotate to -120deg */
+.glow-search-wrap:hover .glow-layer-1::before { rotate: -120deg; }
+.glow-search-wrap:hover .glow-layer-2::before { rotate: -98deg;  }
+.glow-search-wrap:hover .glow-layer-3::before { rotate: -97deg;  }
+
+/* ON FOCUS — full spin to 420deg */
+.glow-search-wrap:focus-within .glow-layer-1::before {
+  rotate: 420deg;
+  transition: rotate 4s ease;
+}
+.glow-search-wrap:focus-within .glow-layer-2::before {
+  rotate: 442deg;
+  transition: rotate 4s ease;
+}
+.glow-search-wrap:focus-within .glow-layer-3::before {
+  rotate: 443deg;
+  transition: rotate 4s ease;
+}
+
+/* Search icon inside input */
+.search-icon-inside {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Actual input field */
+.search-input {
+  width: 300px;
+  height: 52px;
+  padding: 0 20px 0 46px;
+  border-radius: 30px;
+  border: none;
+  background: rgba(1, 2, 1, 0.85);
+  color: white;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
   position: relative;
   z-index: 1;
-}
-
-
-/* ── HEADER ── */
-header {
-  text-align: center;
-  padding: 24px 0 16px;
-}
-
-header h1 {
-  font-size: 2rem;
-  letter-spacing: 2px;
-  color: #e0e0e0;
-}
-
-
-/* ── SEARCH SECTION ── */
-.search-section {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-#city-input {
-  width: 340px;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 30px;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  outline: none;
-  backdrop-filter: blur(6px);
-}
-
-#city-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-#city-input:focus {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-#search-btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 30px;
-  background: #e94560;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
   transition: background 0.3s;
 }
 
-#search-btn:hover {
-  background: #c73652;
+.search-input::placeholder { color: rgba(255,255,255,0.4); }
+.search-input:focus { background: rgba(5, 5, 20, 0.9); }
+
+
+/* ============================================
+   GLASSMORPHISM COMPONENTS
+   ============================================ */
+
+.glass-header {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+.glass-header:hover {
+  background: rgba(255,255,255,0.13);
 }
 
-#location-btn {
-  padding: 12px 20px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 30px;
-  background: transparent;
+.glass-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  cursor: default;
+}
+.stat-card:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+
+/* ============================================
+   🔥 BUTTONS — Ripple Variants
+   ============================================ */
+
+.btn-primary {
+  background: linear-gradient(135deg, #e94560, #c0392b);
+  border: none;
   color: white;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(233,69,96,0.4), 0 2px 6px rgba(0,0,0,0.2);
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
   cursor: pointer;
-  transition: all 0.3s;
 }
-
-#location-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: white;
+.btn-primary:hover {
+  transform: translateY(-6px) scale(1.06);
+  box-shadow: 0 16px 40px rgba(233,69,96,0.55);
+  animation-play-state: paused;
 }
+.btn-primary:active { transform: translateY(-2px) scale(0.97); }
 
-#location-btn.loading-loc {
+.btn-outline {
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  color: white;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  cursor: pointer;
+}
+.btn-outline:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.7);
+  transform: translateY(-6px) scale(1.06);
+  box-shadow: 0 16px 35px rgba(255,255,255,0.15);
+  animation-play-state: paused;
+}
+.btn-outline:active { transform: translateY(-2px) scale(0.97); }
+
+.btn-outline.loading-loc {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 
-/* ── ERROR MESSAGE ── */
-.error-msg {
-  text-align: center;
-  color: #e94560;
-  font-size: 0.95rem;
-  margin-top: 10px;
-  min-height: 20px;
+/* ============================================
+   🌊 RIPPLE EFFECT ON CLICK
+   ============================================ */
+
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background: rgba(255,255,255,0.35);
+  animation: rippleSpread 0.6s linear forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleSpread {
+  0%   { transform: scale(0); opacity: 1;   }
+  100% { transform: scale(4); opacity: 0;   }
 }
 
 
-/* ── CURRENT WEATHER CARD ── */
-.weather-card {
-  max-width: 480px;
-  margin: 30px auto;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 32px;
-  text-align: center;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+/* ============================================
+   🎈 FLOATING ANIMATION
+   ============================================ */
+
+.float-btn {
+  animation: floatUpDown 3s ease-in-out infinite;
+}
+.float-btn:nth-of-type(1) { animation-delay: 0s;   }
+.float-btn:nth-of-type(2) { animation-delay: 0.5s; }
+
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-7px); }
 }
 
-.city-name {
-  font-size: 1.4rem;
-  color: #aad4f5;
-  margin-bottom: 8px;
+.float-card {
+  animation: floatCard 5s ease-in-out infinite;
 }
-
-.temperature {
-  font-size: 4rem;
-  font-weight: 700;
-  margin: 10px 0;
-}
-
-.condition {
-  font-size: 1.1rem;
-  color: #cccccc;
-  margin-bottom: 20px;
-  text-transform: capitalize;
-}
-
-.details {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 0.95rem;
-  color: #dddddd;
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-8px); }
 }
 
 
-/* ── 5-DAY FORECAST ── */
-.forecast-section {
-  max-width: 680px;
-  margin: 0 auto 40px;
+/* ============================================
+   💬 TOOLTIP POPUPS
+   ============================================ */
+
+.tooltip-wrap { position: relative; display: inline-block; }
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(10,10,25,0.94);
+  color: #dde0ff;
+  font-size: 0.73rem;
+  font-weight: 500;
+  padding: 7px 13px;
+  border-radius: 10px;
+  white-space: nowrap;
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 100;
+}
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(10,10,25,0.94);
+}
+.tooltip-wrap:hover .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0px);
 }
 
-.forecast-section h3 {
-  text-align: center;
-  margin-bottom: 14px;
-  font-size: 1.1rem;
-  color: #aad4f5;
-  letter-spacing: 1px;
+/* Left-side tooltip for FAB */
+.tooltip-left-pos {
+  bottom: 50%;
+  left: auto;
+  right: calc(100% + 12px);
+  transform: translateY(50%) translateX(8px);
+}
+.tooltip-left-pos::after {
+  top: 50%; left: 100%;
+  transform: translateY(-50%);
+  border-top-color: transparent;
+  border-left-color: rgba(10,10,25,0.94);
+}
+.tooltip-wrap:hover .tooltip-left-pos {
+  transform: translateY(50%) translateX(0px);
 }
 
-.forecast-row {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
+
+/* ============================================
+   🌡️ TEMPERATURE GLOW TEXT
+   ============================================ */
+
+.temp-glow {
+  background: linear-gradient(135deg, #ffffff, #aad4f5, #7fb8e8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 24px rgba(170,212,245,0.45));
 }
+
+
+/* ============================================
+   📅 FORECAST CARDS
+   ============================================ */
 
 .forecast-card {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 16px 20px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 18px;
+  padding: 18px 22px;
   text-align: center;
   flex: 1;
   min-width: 100px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(6px);
-}
-
-.forecast-card:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-4px);
-  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
   cursor: default;
+  position: relative;
+  overflow: hidden;
 }
-
+.forecast-card:hover {
+  background: rgba(255,255,255,0.16);
+  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-12px) scale(1.06);
+  box-shadow: 0 22px 45px rgba(0,0,0,0.35), 0 0 20px rgba(170,212,245,0.15);
+}
 .forecast-card .day {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: #aad4f5;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
+.forecast-card .fc-icon  { font-size: 1.8rem; margin: 6px 0; }
+.forecast-card .fc-temp  { font-size: 1.15rem; font-weight: 700; }
 
-.forecast-card .fc-icon {
-  font-size: 1.5rem;
-  margin: 6px 0;
-}
 
-.forecast-card .fc-temp {
+/* ============================================
+   🔵 FLOATING ACTION BUTTONS
+   ============================================ */
+
+.fab-btn {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(16px);
   font-size: 1.2rem;
-  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  animation: floatUpDown 3s ease-in-out infinite;
+  color: white;
+}
+.fab-btn:hover {
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.5);
+  transform: scale(1.2) translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+  animation-play-state: paused;
 }
 
 
-/* ── LOADING ANIMATION ── */
-.loading {
-  text-align: center;
-  color: #aad4f5;
-  font-size: 1rem;
-  margin: 10px 0;
-  animation: pulse 1.2s infinite;
-}
+/* ============================================
+   SCROLLBAR + RESPONSIVE
+   ============================================ */
 
-@keyframes pulse {
-  0%, 100% { opacity: 1;   }
-  50%       { opacity: 0.4; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+#error-msg { letter-spacing: 0.3px; font-weight: 500; }
+
+@media (max-width: 640px) {
+  .search-input   { width: 80vw; }
+  .glass-card     { margin: 12px; padding: 20px 14px; }
+  .forecast-card  { min-width: 75px; padding: 12px; }
+  header h1       { font-size: 1.25rem; }
 }
