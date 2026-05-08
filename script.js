@@ -64,61 +64,81 @@ const WEATHER_ICONS = {
 
 
 /* ── DOM ELEMENTS ── */
-const searchBtn  = document.getElementById("search-btn");
+const searchBtn   = document.getElementById("search-btn");
 const locationBtn = document.getElementById("location-btn");
-const cityInput  = document.getElementById("city-input");
-const errorMsg   = document.getElementById("error-msg");
+const cityInput   = document.getElementById("city-input");
+const errorMsg    = document.getElementById("error-msg");
+
+
+/* ============================================
+   🌊 RIPPLE EFFECT — applied to all .ripple-btn
+   ============================================ */
+
+document.querySelectorAll(".ripple-btn").forEach(function (btn) {
+  btn.addEventListener("click", function (e) {
+    const rect   = btn.getBoundingClientRect();
+    const size   = Math.max(rect.width, rect.height);
+    const x      = e.clientX - rect.left - size / 2;
+    const y      = e.clientY - rect.top  - size / 2;
+
+    const wave = document.createElement("span");
+    wave.classList.add("ripple-wave");
+    wave.style.width  = size + "px";
+    wave.style.height = size + "px";
+    wave.style.left   = x + "px";
+    wave.style.top    = y + "px";
+
+    btn.appendChild(wave);
+    setTimeout(() => wave.remove(), 650);
+  });
+});
 
 
 /* ============================================
    EVENT LISTENERS
    ============================================ */
 
-// Search by city name — button click
+// Search by city — button click
 searchBtn.addEventListener("click", function () {
   const city = cityInput.value.trim();
   if (city === "") {
-    alert("Please enter a city name!");
+    showError("⚠️ Please enter a city name!");
     return;
   }
   fetchWeather(city);
   fetchForecast(city);
 });
 
-// Search by city name — Enter key
+// Search — Enter key
 cityInput.addEventListener("keypress", function (e) {
   if (e.key === "Enter") searchBtn.click();
 });
 
-// Detect current location — button click
+// My Location — GPS
 locationBtn.addEventListener("click", function () {
   if (!navigator.geolocation) {
-    alert("Your browser doesn't support location detection.");
+    showError("❌ Your browser doesn't support location detection.");
     return;
   }
 
-  // Show loading state on button
-  locationBtn.textContent = "📍 Detecting...";
+  locationBtn.textContent = " Detecting...";
   locationBtn.classList.add("loading-loc");
   locationBtn.disabled = true;
 
   navigator.geolocation.getCurrentPosition(
-    // Success: got coordinates
     function (position) {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
-
       resetLocationBtn();
       fetchWeatherByCoords(lat, lon);
       fetchForecastByCoords(lat, lon);
     },
-    // Error: permission denied or unavailable
     function (error) {
       resetLocationBtn();
       if (error.code === error.PERMISSION_DENIED) {
-        errorMsg.textContent = "❌ Location access denied. Please allow it in your browser settings.";
+        showError("❌ Location access denied. Please allow it in your browser settings.");
       } else {
-        errorMsg.textContent = "❌ Could not detect location. Try searching manually.";
+        showError("❌ Could not detect location. Try searching manually.");
       }
     }
   );
@@ -129,33 +149,26 @@ locationBtn.addEventListener("click", function () {
    FETCH FUNCTIONS
    ============================================ */
 
-// Fetch weather by city name
 async function fetchWeather(city) {
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
-
-  document.getElementById("temperature").textContent = "Loading...";
-  errorMsg.textContent = "";
-
+  document.getElementById("temperature").textContent = "...";
+  clearError();
   try {
     const response = await fetch(url);
     const data     = await response.json();
-
     if (data.cod === "404") {
-      errorMsg.textContent = "❌ City not found! Please check the spelling.";
-      document.getElementById("temperature").textContent = "--°C";
+      showError("❌ City not found! Please check the spelling.");
+      document.getElementById("temperature").textContent = "--°";
       return;
     }
-
     displayWeather(data);
   } catch (error) {
-    errorMsg.textContent = "❌ Network error. Check your connection.";
+    showError("❌ Network error. Check your connection.");
   }
 }
 
-// Fetch 5-day forecast by city name
 async function fetchForecast(city) {
   const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`;
-
   try {
     const response = await fetch(url);
     const data     = await response.json();
@@ -165,24 +178,20 @@ async function fetchForecast(city) {
   }
 }
 
-// Fetch weather by GPS coordinates
 async function fetchWeatherByCoords(lat, lon) {
   const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
-
   try {
     const response = await fetch(url);
     const data     = await response.json();
     displayWeather(data);
-    cityInput.value = data.name; // fill search box with detected city
+    cityInput.value = data.name;
   } catch (error) {
-    errorMsg.textContent = "❌ Failed to fetch weather.";
+    showError("❌ Failed to fetch weather.");
   }
 }
 
-// Fetch 5-day forecast by GPS coordinates
 async function fetchForecastByCoords(lat, lon) {
   const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
-
   try {
     const response = await fetch(url);
     const data     = await response.json();
@@ -197,23 +206,18 @@ async function fetchForecastByCoords(lat, lon) {
    DISPLAY FUNCTIONS
    ============================================ */
 
-// Render current weather card
 function displayWeather(data) {
-  document.getElementById("city-name").textContent   = `📍 ${data.name}, ${data.sys.country}`;
-  document.getElementById("temperature").textContent = `${Math.round(data.main.temp)}°C`;
+  document.getElementById("city-name").textContent   = ` ${data.name}, ${data.sys.country}`;
+  document.getElementById("temperature").textContent = `${Math.round(data.main.temp)}°`;
   document.getElementById("condition").textContent   = data.weather[0].description;
   document.getElementById("humidity").textContent    = `${data.main.humidity}%`;
   document.getElementById("wind").textContent        = `${data.wind.speed} km/h`;
-
   setWeatherBackground(data.weather[0].main);
 }
 
-// Render 5-day forecast cards
 function displayForecast(list) {
   const forecastRow = document.getElementById("forecast-row");
   forecastRow.innerHTML = "";
-
-  // One reading per day at noon (12:00:00)
   const daily = list.filter(item => item.dt_txt.includes("12:00:00"));
 
   daily.forEach(function (day) {
@@ -229,7 +233,6 @@ function displayForecast(list) {
       <div class="fc-icon">${icon}</div>
       <div class="fc-temp">${temp}°C</div>
     `;
-
     forecastRow.appendChild(card);
   });
 }
@@ -239,16 +242,17 @@ function displayForecast(list) {
    HELPER FUNCTIONS
    ============================================ */
 
-// Set dynamic background image based on weather condition
 function setWeatherBackground(condition) {
   const images    = WEATHER_IMAGES[condition] || WEATHER_IMAGES["Clouds"];
   const randomUrl = images[Math.floor(Math.random() * images.length)];
   document.body.style.backgroundImage = `url('${randomUrl}')`;
 }
 
-// Reset location button to default state
 function resetLocationBtn() {
-  locationBtn.textContent = "📍 My Location";
+  locationBtn.textContent = " My Location";
   locationBtn.classList.remove("loading-loc");
   locationBtn.disabled = false;
 }
+
+function showError(msg)  { errorMsg.textContent = msg;  }
+function clearError()    { errorMsg.textContent = "";   }
