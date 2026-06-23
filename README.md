@@ -4,7 +4,7 @@ A live weather web application built with HTML, CSS, and Vanilla JavaScript.
 
 ## 🌐 Live Demo
 🔗 [Click here to view the live app](https://vinaykosuri05.github.io/Weather-Dashboard)
-
+https://vinaykosuri05.github.io/Weather-Dashboard/
 ## 📸 Preview
 > Search any city and see live weather!
 
